@@ -1,0 +1,13 @@
+model User {
+  id String @id @default(uuid())
+  firstName String
+  lastName String
+  username String @unique
+  DNI String
+  email String @unique
+  password String
+  balance Int @default(0)
+
+  createdEvents Event[]
+  acceeptedEvents UserEvent[]
+}

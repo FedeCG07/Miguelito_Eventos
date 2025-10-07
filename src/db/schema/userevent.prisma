@@ -1,0 +1,9 @@
+model UserEvent {
+    id String @id @default(uuid())
+    eventId String
+    userId String
+    amount Int
+
+    User User @relation(fields: [userId], references: [id])
+    Event Event @relation(fields: [eventId], references: [id])
+}

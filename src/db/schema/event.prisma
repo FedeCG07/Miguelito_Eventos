@@ -1,0 +1,19 @@
+model Event {
+  id String @id @default(uuid())
+  title String
+  date DateTime
+  shortDescription String
+  longDescription String
+  address String
+  price Int
+  cancelled Boolean @default(false)
+  maximumAttendees Int
+  assistingUsers Int
+  category Int
+  userCreatorId String
+
+  AssistingUsers UserEvent[]
+
+  User User @relation(fields: [userCreatorId], references: [id])
+  Category Category @relation(fields: [category], references: [id])
+}
