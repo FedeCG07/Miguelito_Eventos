@@ -2,7 +2,8 @@ model UserEvent {
     id String @id @default(uuid())
     eventId String
     userId String
-    amount Int
+    reservationsMade Int
+    reservationsCancelled Int @default(0)
 
     User User @relation(fields: [userId], references: [id])
     Event Event @relation(fields: [eventId], references: [id])

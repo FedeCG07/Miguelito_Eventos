@@ -7,8 +7,8 @@ model Event {
   address String
   price Int
   cancelled Boolean @default(false)
-  maximumAttendees Int
-  assistingUsers Int
+  maximumCapacity Int
+  assistingUsers Int @default(0)
   category Int
   userCreatorId String
 

@@ -1,6 +1,5 @@
 import { User } from "@prisma/client";
 import { db } from "../db/db";
-import { get } from "node:http";
 
 export class UserRepository {
     async createUser(firstName: string, lastName: string, username: string, DNI: string, email: string, password: string) {
