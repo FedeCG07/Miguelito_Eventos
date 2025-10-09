@@ -41,7 +41,7 @@ export class UserEventRepository {
         const user_events: UserEvent[] = await prisma.$queryRaw`
         select * from userevent
         where userevent.userid = ${userId}
-        and reservationsMade - reservationsCancelled = 0;
+        and reservationsMade - reservationsCancelled != 0;
         `
 
         if (user_events.length === 0) throw new Error;
@@ -53,11 +53,24 @@ export class UserEventRepository {
         const user_events: UserEvent[] = await prisma.$queryRaw`
         select * from userevent
         where userevent.eventid = ${eventId}
-        and reservationsMade - reservationsCancelled = 0;
+        and reservationsMade - reservationsCancelled != 0;
         `
 
         if (user_events.length === 0) throw new Error;
 
         return user_events;
+    }
+
+    async getUserEventByUserIdAndEventId(eventId: string, userId: string) {
+        const user_event: UserEvent[] = await prisma.$queryRaw`
+        select * from userevent
+        where userevent.eventid = ${eventId}
+        and userevent.userid = ${userId}
+        and reservationsMade - reservationsCancelled != 0;
+        `
+
+        if (user_event.length === 0) throw new Error;
+
+        return user_event[0];
     }
 }

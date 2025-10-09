@@ -40,7 +40,6 @@ export class UserRepository {
 
         if (!user) throw new Error;
 
-
         return user;
     }
 
@@ -52,7 +51,6 @@ export class UserRepository {
         })
 
         if (!user) throw new Error;
-
 
         return user;
     }

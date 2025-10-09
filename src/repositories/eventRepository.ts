@@ -21,7 +21,8 @@ export class EventRepositroy {
 
         return new_event;
     }
-
+    
+    //PREGUNTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAR
     async cancelEvent(id: string) {
         const cancelled_event = await db.event.updateMany({
             where: {
@@ -84,5 +85,17 @@ export class EventRepositroy {
         if (updated_event.count === 0) throw new Error;
 
         return updated_event;
+    }
+
+    async getEventById(id: string) {
+        const event = await db.event.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if (!event) throw new Error;
+
+        return event;
     }
 }
