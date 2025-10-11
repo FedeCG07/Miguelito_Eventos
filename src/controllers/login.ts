@@ -28,7 +28,7 @@ export async function login(req: Request, res: Response) {
             maxAge: 1000 * 60 * 60 // 1 hour
         });
 
-        res.status(200).json({ message: 'Inicio de sesón exitoso' });
+        res.status(200).json({ user });
     } catch (error) {
         throw error;
     }

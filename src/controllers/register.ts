@@ -8,7 +8,7 @@ export async function register(req: Request, res: Response) {
         const { firstName, lastName, username, DNI, email, password } = req.body;
         const user = userService.register(firstName, lastName, username, DNI, email, password);
 
-        res.status(201).json({ message: 'Registro exitoso' });
+        res.status(201).json({ user });
     } catch (error) {
         throw error;
     }

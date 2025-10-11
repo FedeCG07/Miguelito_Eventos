@@ -48,4 +48,15 @@ export class UserService {
             throw error;
         }
     }
+
+    async checkBalance(id: string) {
+        try {
+            const user = await userRepository.getUserById(id);
+            const balance = user.balance
+
+            return balance;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
