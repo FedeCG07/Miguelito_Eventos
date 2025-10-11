@@ -19,7 +19,7 @@ export class UserService {
         }
     }
 
-    async login(emailOrUsername: string, inputPassword: string) {
+    async logIn(emailOrUsername: string, inputPassword: string) {
         try {
             const isEmail = emailOrUsername.includes('@');
 
