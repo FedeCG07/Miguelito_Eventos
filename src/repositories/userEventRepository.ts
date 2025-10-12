@@ -69,8 +69,6 @@ export class UserEventRepository {
         and reservationsMade - reservationsCancelled != 0;
         `
 
-        if (user_event.length === 0) throw new Error;
-
-        return user_event[0];
+        return user_event;
     }
 }

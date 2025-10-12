@@ -12,10 +12,10 @@ export async function addFunds(req: Request, res: Response) {
         
         if (!token) throw new Error;
 
-        const decodedToken = authService.decodeToken(token);
-        const userId = decodedToken.id;
+        const decoded_token = authService.decodeToken(token);
+        const user_id = decoded_token.id;
 
-        const user = await userService.addFunds(userId, amount);
+        const user = await userService.addFunds(user_id, amount);
 
         res.status(200).json(user);
     } catch (error) {

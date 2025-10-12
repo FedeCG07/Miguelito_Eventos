@@ -1,10 +1,14 @@
 import { EventRepositroy } from "../repositories/eventRepository";
 import { UserEventRepository } from "../repositories/userEventRepository";
 import { UserRepository } from "../repositories/userRepository";
+import { CategoryRepository } from "../repositories/categoryRepository";
+import { Event as PrismaEvent } from '@prisma/client';
+
 
 const eventRepository = new EventRepositroy();
 const userEventRepository = new UserEventRepository();
 const userRepository = new UserRepository();
+const categoryRepository = new CategoryRepository();
 
 export class EventService {
     async createEvent(title: string, date: Date, shortDescription: string, longDescription: string, address: string, price: number, maximumCapacity: number, category: number, userCreatorId: string) {
@@ -23,6 +27,10 @@ export class EventService {
 
     async joinEvent(eventId: string, userId: string, reservations: number) {
         try {
+            const user_event = await userEventRepository.getUserEventByUserIdAndEventId(eventId, userId);
+
+            if (user_event.length != 0) throw new Error('Already joined this event'); //already joined the event
+            
             const event = await eventRepository.getEventById(eventId);
             const price = event.price;
 
@@ -36,7 +44,7 @@ export class EventService {
                 const balance = user.balance;
                 if (!(balance >= price * reservations)) throw new Error;
 
-                await userRepository.decreaseBalance(eventId, price * reservations)
+                await userRepository.decreaseBalance(userId, price * reservations);
             }
 
             const new_user_event = await userEventRepository.createUserEvent(eventId, userId, reservations);
@@ -56,8 +64,8 @@ export class EventService {
             if (price != 0) throw new Error;
 
             const user_event = await userEventRepository.getUserEventByUserIdAndEventId(eventId, userId);
-            const reservations_made = user_event.reservationsMade;
-            const reservations_cancelled = user_event.reservationsCancelled;
+            const reservations_made = user_event[0].reservationsMade;
+            const reservations_cancelled = user_event[0].reservationsCancelled;
             const total_reservations = reservations_made - reservations_cancelled;
             if (total_reservations - amount < 0) throw new Error;
 
@@ -68,5 +76,65 @@ export class EventService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async getAllEvents() {
+        try {
+            const events = await eventRepository.getAllEvents();
+
+            const events_details = await this.mapEventDetails(events);
+
+            return events_details;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getFreeEvents() {
+        try {
+            const events = await eventRepository.getFreeEvents();
+            
+            const events_details = await this.mapEventDetails(events);
+
+            return events_details;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getEventByCategory(category: number) {
+        try {
+            const events = await eventRepository.getEventsByCategory(category);
+
+            const event_details = await this.mapEventDetails(events);
+
+            return event_details;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async mapEventDetails(events: PrismaEvent[]) {
+        const eventsDetails = await Promise.all(
+            events.map(async (event: any) => {
+                const category = await categoryRepository.getCategory(event.category);
+                const creator = await userRepository.getUserById(event.userCreatorId);
+                return {
+                    id: event.id,
+                    title: event.title,
+                    date: event.date,
+                    shortDescription: event.shortDescription,
+                    longDescription: event.longDescription,
+                    price: event.price,
+                    cancelled: event.cancelled,
+                    maximumCapaxity: event.maximumCapacity,
+                    assistingUsers: event.assistingUsers,
+                    category: category.category,
+                    creator: creator.firstName + creator.lastName
+                }
+            })
+        )
+
+        return eventsDetails;
     }
 }

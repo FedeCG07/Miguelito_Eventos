@@ -7,9 +7,9 @@ const authService = new AuthService();
 
 export async function login(req: Request, res: Response) {
     try {
-        const oldToken = req.cookies?.token;
+        const old_token = req.cookies?.token;
 
-        if (oldToken) {
+        if (old_token) {
             throw new Error;
         }
 

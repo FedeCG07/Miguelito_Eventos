@@ -14,4 +14,8 @@ export class CategoryRepository {
 
         return category;
     }
+
+    async getAllCategories() {
+        return await db.category.findMany();
+    }
 }

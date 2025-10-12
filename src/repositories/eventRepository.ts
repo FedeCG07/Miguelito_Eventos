@@ -98,4 +98,61 @@ export class EventRepositroy {
 
         return event;
     }
+
+    async getAllEvents() {
+        return await db.event.findMany({
+            where: {
+                date: {
+                    gt: new Date()
+                }
+            },
+            orderBy: {
+                cancelled: 'asc'
+            }
+        });
+    }
+
+    async getFreeEvents() {
+        try {
+            const events = await db.event.findMany({
+                where: {
+                    price: 0,
+                    date: {
+                        gt: new Date()
+                    }
+                },
+                orderBy: {
+                    cancelled: 'asc'
+                }
+            })
+
+            if (!events) throw new Error;
+
+            return events;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getEventsByCategory(category: number) {
+        try {
+            const events = await db.event.findMany({
+                where: {
+                    category,
+                    date: {
+                        gt: new Date()
+                    }
+                },
+                orderBy: {
+                    cancelled: 'asc'
+                }
+            })
+
+            if (!events) throw new Error;
+
+            return events;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
