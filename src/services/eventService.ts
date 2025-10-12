@@ -60,6 +60,10 @@ export class EventService {
         try {
             const event = await eventRepository.getEventById(eventId);
 
+            if (event.userCreatorId == userId) throw new Error;
+
+            if (event.date < new Date()) throw new Error;
+
             const price = event.price;
             if (price != 0) throw new Error;
 
@@ -114,6 +118,40 @@ export class EventService {
         }
     }
 
+    async getEventsJoinedByUser(userId: string) {
+        try {
+            const user_events = await userEventRepository.getUserEventByUserId(userId);
+            const events = await Promise.all(
+                user_events.map(async (user_event: any) => {
+                    const event = await eventRepository.getEventById(user_event.eventId);
+                    return event;
+                })
+            )
+
+            const event_details = await this.mapEventDetails(events);
+
+            return event_details;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getEventAssistingUsers(eventId: string) {
+        try {
+            const user_events = await userEventRepository.getUserEventByEventId(eventId);
+            const users = await Promise.all(
+                user_events.map(async (user_event: any) => {
+                    const user = await userRepository.getUserById(user_event.userId);
+                    return user;
+                })
+            )
+
+            return users;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async mapEventDetails(events: PrismaEvent[]) {
         const eventsDetails = await Promise.all(
             events.map(async (event: any) => {
@@ -130,7 +168,7 @@ export class EventService {
                     maximumCapaxity: event.maximumCapacity,
                     assistingUsers: event.assistingUsers,
                     category: category.category,
-                    creator: creator.firstName + creator.lastName
+                    creator: creator.firstName + ' ' + creator.lastName
                 }
             })
         )
