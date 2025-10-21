@@ -9,7 +9,7 @@ export async function createEvent(req: Request, res: Response) {
     try {
         const token = req.cookies?.token;
         const { title, date, shortDescription, longDescription, address, price, maximumCapacity, category } = req.body;
-        const formated_date = new Date(date);
+        const formated_date = new Date(date); //2025-10-21T15:30:00Z
         const int_price = +price;
         const int_maximumCapacity = +maximumCapacity;
         const int_category = +category;

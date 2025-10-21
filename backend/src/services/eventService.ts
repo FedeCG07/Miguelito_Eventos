@@ -152,6 +152,22 @@ export class EventService {
         }
     }
 
+    async cancelEvent(eventId: string) {
+        try {
+            const cancelled_event = await eventRepository.cancelEvent(eventId);
+            const users = await userEventRepository.getUserEventByEventId(eventId);
+            for (const user of users) {
+                if (user.id == cancelled_event.userCreatorId) continue; 
+                const ticket_amount = user.reservations_made - user.reservations_cancelled;
+                await userRepository.increaseBalance(user.userId, cancelled_event.price * ticket_amount);
+            }
+
+            return cancelled_event;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async mapEventDetails(events: PrismaEvent[]) {
         const eventsDetails = await Promise.all(
             events.map(async (event: any) => {

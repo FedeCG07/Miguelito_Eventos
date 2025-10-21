@@ -22,7 +22,6 @@ export class EventRepositroy {
         return new_event;
     }
     
-    //PREGUNTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAR
     async cancelEvent(id: string) {
         const cancelled_event = await db.event.updateMany({
             where: {

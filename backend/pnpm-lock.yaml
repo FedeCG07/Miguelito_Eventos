@@ -26,6 +26,9 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
+      miguelito-eventos:
+        specifier: 'file:'
+        version: file:(prisma@6.7.0(typescript@5.8.3))(typescript@5.8.3)
     devDependencies:
       '@types/bcrypt':
         specifier: ^5.0.2
@@ -498,6 +501,9 @@ packages:
   merge-descriptors@2.0.0:
     resolution: {integrity: sha512-Snk314V5ayFLhp3fkUREub6WtjBfPdCPY1Ln8/8munuLuiYhsABgBVWsozAG+MWMbVEvcdcpbi9R7ww22l9Q3g==}
     engines: {node: '>=18'}
+
+  'miguelito-eventos@file:':
+    resolution: {directory: '', type: directory}
 
   mime-db@1.54.0:
     resolution: {integrity: sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ==}
@@ -1085,6 +1091,19 @@ snapshots:
   media-typer@1.1.0: {}
 
   merge-descriptors@2.0.0: {}
+
+  miguelito-eventos@file:(prisma@6.7.0(typescript@5.8.3))(typescript@5.8.3):
+    dependencies:
+      '@prisma/client': 6.7.0(prisma@6.7.0(typescript@5.8.3))(typescript@5.8.3)
+      bcrypt: 6.0.0
+      cookie-parser: 1.4.7
+      dotenv: 16.5.0
+      express: 5.1.0
+      jsonwebtoken: 9.0.2
+    transitivePeerDependencies:
+      - prisma
+      - supports-color
+      - typescript
 
   mime-db@1.54.0: {}
 

@@ -14,7 +14,7 @@ export class UserRepository {
             }
         })
 
-        if (!newUser) throw new Error;
+        if (!newUser) throw new Error("NO EXISTEEEEEEEEEEE");
 
         return newUser;
     }

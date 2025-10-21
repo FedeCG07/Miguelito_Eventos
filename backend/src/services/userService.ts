@@ -31,7 +31,7 @@ export class UserService {
             const password = user.password;
 
             const correctPassword = bcrypt.compare(inputPassword, password)
-            if (!correctPassword) throw new Error;
+            if (!correctPassword) throw new Error();
 
             return user;
         } catch (error) {
