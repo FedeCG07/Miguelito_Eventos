@@ -2,7 +2,7 @@ import { EventRepositroy } from "../repositories/eventRepository";
 import { UserEventRepository } from "../repositories/userEventRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { CategoryRepository } from "../repositories/categoryRepository";
-import { Event as PrismaEvent } from '@prisma/client';
+import { Event as PrismaEvent, UserEvent } from '@prisma/client';
 
 
 const eventRepository = new EventRepositroy();
@@ -158,7 +158,7 @@ export class EventService {
             const users = await userEventRepository.getUserEventByEventId(eventId);
             for (const user of users) {
                 if (user.id == cancelled_event.userCreatorId) continue; 
-                const ticket_amount = user.reservations_made - user.reservations_cancelled;
+                const ticket_amount = user.reservationsMade - user.reservationsCancelled;
                 await userRepository.increaseBalance(user.userId, cancelled_event.price * ticket_amount);
             }
 
