@@ -1,19 +1,55 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
+import axios from "axios"
 import { EventCard } from "@/components/event-card"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { mockEvents, categories } from "@/lib/mock-data"
 import { useAuth } from "@/lib/auth-context"
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("Todos")
+  const [events, setEvents] = useState<any[]>([])
+  const [categories, setCategories] = useState<string[]>(["Todos"])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL
+
+        // Fetch categories and events in parallel
+        const [categoriesRes, eventsRes] = await Promise.all([
+          axios.get(`${baseUrl}/category/`),
+          axios.get(`${baseUrl}/event/`)
+        ])
+
+        // Merge "Todos" as a default category
+        setCategories([
+          "Todos",
+          ...categoriesRes.data.categories.map((c: any) => c.category)
+        ])
+        console.log("Categories response:", eventsRes.data)
+        setEvents(eventsRes.data)
+      } catch (err) {
+        console.error(err)
+        setError("No se pudieron cargar los datos. Intenta nuevamente.")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
   const filteredEvents = useMemo(() => {
-    return mockEvents.filter((event) => {
+    return events.filter((event) => {
       return selectedCategory === "Todos" || event.category === selectedCategory
     })
   }, [selectedCategory])
