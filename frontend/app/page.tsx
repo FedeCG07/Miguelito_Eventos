@@ -36,7 +36,7 @@ export default function HomePage() {
           ...categoriesRes.data.categories.map((c: any) => c.category)
         ])
         console.log("Categories response:", eventsRes.data)
-        setEvents(eventsRes.data)
+        setEvents(eventsRes.data.events)
       } catch (err) {
         console.error(err)
         setError("No se pudieron cargar los datos. Intenta nuevamente.")
