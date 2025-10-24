@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx --watch src/index.ts",
     "db:migrate": "prisma migrate dev --schema src/db/schema",
-    "db:generate": "prisma generate --schema src/db/schema"
+    "db:generate": "prisma generate --schema src/db/schema",
+    "test": "jest"
   },
   "dependencies": {
     "@prisma/client": "^6.7.0",
@@ -23,9 +24,16 @@
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.1",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.14.0",
+    "@types/serve-static": "^1.15.10",
+    "@types/superagent": "^8.1.9",
+    "@types/supertest": "^6.0.3",
+    "jest": "^30.2.0",
     "prisma": "^6.7.0",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.5",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   }

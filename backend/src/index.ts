@@ -9,6 +9,7 @@ import { eventRouter } from "./routers/eventRouter";
 import { categoryRouter } from "./routers/categoryRouter";
 
 const app = express()
+export default app;
 
 app.use(express.json())
 app.use(cookieParser())
