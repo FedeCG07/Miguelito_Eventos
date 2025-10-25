@@ -13,9 +13,9 @@ export async function login(req: Request, res: Response) {
             throw new Error;
         }
 
-        const { emailOrUsername, password } = req.body;
+        const { identifier, password } = req.body;
 
-        const user = await userService.logIn(emailOrUsername, password);
+        const user = await userService.logIn(identifier, password);
 
         const token = authService.createToken({
             id: user.id

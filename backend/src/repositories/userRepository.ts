@@ -56,7 +56,7 @@ export class UserRepository {
     }
     
     async increaseBalance(id: string, amount: number) {
-        const updated_user = await db.user.updateMany({
+        const updated_user = await db.user.update({
             where: {
                 id
             },
@@ -66,8 +66,6 @@ export class UserRepository {
                 } 
             }
         })
-
-        if (updated_user.count === 0) throw new Error;
 
         return updated_user;
     }

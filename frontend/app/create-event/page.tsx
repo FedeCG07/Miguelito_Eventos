@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
@@ -12,15 +12,29 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar, MapPin, Users, DollarSign, ImageIcon, ArrowLeft } from "lucide-react"
-import { categories } from "@/lib/mock-data"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
+import axios from "axios"
 
 export default function CreateEventPage() {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, isLoading } = useAuth()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [categories, setCategories] = useState<{ id: string; category: string }[]>([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL
+        const res = await axios.get(`${baseUrl}/category/`, { withCredentials: true })
+        setCategories(res.data.categories)
+      } catch (err) {
+        console.error("Error cargando categorías", err)
+      }
+    }
+    fetchCategories()
+  }, [])
 
   const [formData, setFormData] = useState({
     title: "",
@@ -35,9 +49,13 @@ export default function CreateEventPage() {
     price: "",
   })
 
-  // Redirect if not logged in
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login")
+    }
+  }, [user, isLoading, router])
+
   if (!user) {
-    router.push("/login")
     return null
   }
 
@@ -66,8 +84,40 @@ export default function CreateEventPage() {
       return
     }
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL
+
+      const eventDate = new Date(`${formData.date}T${formData.time}:00`)
+
+      const payload = {
+        title: formData.title,
+        date: eventDate.toISOString(),
+        shortDescription: formData.shortDescription,
+        longDescription: formData.longDescription,
+        address: formData.address,
+        price: Number(formData.price),        
+        maximumCapacity: Number(formData.maxAttendees),
+        category: formData.category
+      }
+
+      await axios.post(`${baseUrl}/event/create`, payload, { withCredentials: true })
+
+      toast({
+        title: "Evento creado",
+        description: "Tu evento ha sido creado exitosamente",
+      })
+
+      router.push("/")
+    } catch (err) {
+      console.error("Error creando evento:", err)
+      toast({
+        title: "Error",
+        description: "No se pudo crear el evento",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
 
     toast({
       title: "Evento creado",
@@ -149,13 +199,11 @@ export default function CreateEventPage() {
                   <SelectValue placeholder="Selecciona una categoría" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories
-                    .filter((cat) => cat !== "Todos")
-                    .map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={String(cat.id)}>
+                      {cat.category}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -252,7 +300,7 @@ export default function CreateEventPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="price">
-                  Precio (MXN) <span className="text-destructive">*</span>
+                  Precio <span className="text-destructive">*</span>
                 </Label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

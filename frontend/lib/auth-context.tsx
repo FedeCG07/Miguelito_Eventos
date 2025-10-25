@@ -1,123 +1,121 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import axios from "axios";
+import { Dna } from "lucide-react";
 
 export interface User {
-  id: string
-  name: string
-  email: string
-  balance: number
-  avatar?: string
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  DNI: string;
+  email: string;
+  balance: number;
+  avatar?: string;
 }
 
 interface AuthContextType {
-  user: User | null
-  login: (email: string, password: string) => Promise<boolean>
-  register: (name: string, email: string, password: string) => Promise<boolean>
-  logout: () => void
-  updateBalance: (amount: number) => void
-  createEvent: (eventData: any) => Promise<string>
-  isLoading: boolean
+  user: User | null;
+  isLoading: boolean;
+  login: (identifier: string, password: string) => Promise<boolean>;
+  register: (firstName: string, lastName: string, username: string, DNI: string, email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
+  updateBalance: (amount: number) => Promise<boolean>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+axios.defaults.withCredentials = true; // algo de las cookies (?
+const baseUrl = process.env.NEXT_PUBLIC_API_URL
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user session
-    const storedUser = localStorage.getItem("user")
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`${baseUrl}/user/me`)
+        setUser(res.data.user);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const login = async (identifier: string, password: string): Promise<boolean> => {
+    try {
+      const res = await axios.post(`${baseUrl}/user/login`, { identifier, password });
+      setUser(res.data.user);
+      return true;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 404) {
+          console.warn("Usuario no encontrado")
+        } 
+      }
+      return false
     }
-    setIsLoading(false)
-  }, [])
+  };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    // Mock login - in production this would validate against a backend
-    const mockUser: User = {
-      id: "1",
-      name: "Usuario Demo",
-      email,
-      balance: 5000,
-      avatar: "/diverse-user-avatars.png",
+  const register = async (firstName: string, lastName: string, username: string, DNI: string, email: string, password: string): Promise<boolean> => {
+    try {
+      const res = await axios.post(`${baseUrl}/user/register`, { firstName, lastName, username, DNI, email, password });
+      setUser(res.data.user);
+      return true;
+    } catch (err) {
+      console.error("Register error:", err);
+      return false;
     }
+  };
 
-    setUser(mockUser)
-    localStorage.setItem("user", JSON.stringify(mockUser))
-    return true
-  }
-
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    const mockUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
-      name,
-      email,
-      balance: 0,
-      avatar: "/diverse-user-avatars.png",
+  const logout = async () => {
+    try {
+      await axios.get(`${baseUrl}/user/logout`);
+      setUser(null);
+    } catch (err) {
+      console.error("Logout error:", err);
     }
+  };
 
-    setUser(mockUser)
-    localStorage.setItem("user", JSON.stringify(mockUser))
-    return true
-  }
+  const updateBalance = async (amount: number): Promise<boolean> => {
+    if (!user) throw new Error("No hay usuario logueado")
 
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem("user")
-  }
+    try {
+      const res = await axios.post(`${baseUrl}/user/add/${amount}`)
+      
+      setUser(res.data.user)
 
-  const updateBalance = (amount: number) => {
-    if (user) {
-      const updatedUser = { ...user, balance: user.balance + amount }
-      setUser(updatedUser)
-      localStorage.setItem("user", JSON.stringify(updatedUser))
+      return true
+    } catch (err) {
+      console.error("Error al actualizar balance:", err)
+      throw err
     }
-  }
-
-  const createEvent = async (eventData: any): Promise<string> => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    // Generate a unique ID for the event
-    const eventId = Math.random().toString(36).substr(2, 9)
-
-    // In a real app, this would save to a database
-    // For now, we'll store it in localStorage
-    const existingEvents = JSON.parse(localStorage.getItem("userEvents") || "[]")
-    const newEvent = {
-      ...eventData,
-      id: eventId,
-      creatorId: user?.id,
-      creatorName: user?.name,
-      attendees: 0,
-      attendeesList: [],
-    }
-    existingEvents.push(newEvent)
-    localStorage.setItem("userEvents", JSON.stringify(existingEvents))
-
-    return eventId
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, updateBalance, createEvent, isLoading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        login,
+        register,
+        logout,
+        updateBalance,
+      }}
+    >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
-  }
-  return context
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  return context;
 }

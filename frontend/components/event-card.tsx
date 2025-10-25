@@ -5,14 +5,14 @@ import Link from "next/link"
 import { Calendar, MapPin, Users, DollarSign } from "lucide-react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import type { Event } from "@/lib/mock-data"
+import type { Event } from "@/lib/types"
 
 interface EventCardProps {
   event: Event
 }
 
 export function EventCard({ event }: EventCardProps) {
-  const attendancePercentage = (event.attendees / event.maxAttendees) * 100
+  const attendancePercentage = (event.assistingUsers / event.maximumCapacity) * 100
   const isAlmostFull = attendancePercentage >= 80
 
   return (
@@ -46,8 +46,12 @@ export function EventCard({ event }: EventCardProps) {
                   month: "long",
                   year: "numeric",
                 })}{" "}
-                - {event.time}
-              </span>
+                -{" "}
+                {new Date(event.date).toLocaleTimeString("es-ES", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span> 
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
@@ -61,7 +65,7 @@ export function EventCard({ event }: EventCardProps) {
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm font-medium">
-              {event.attendees}/{event.maxAttendees}
+              {event.assistingUsers}/{event.maximumCapacity}
             </span>
             {isAlmostFull && (
               <Badge variant="destructive" className="text-xs">

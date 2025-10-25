@@ -30,7 +30,7 @@ export class UserService {
 
             const password = user.password;
 
-            const correctPassword = bcrypt.compare(inputPassword, password)
+            const correctPassword = await bcrypt.compare(inputPassword, password)
             if (!correctPassword) throw new Error();
 
             return user;
@@ -55,6 +55,16 @@ export class UserService {
             const balance = user.balance
 
             return balance;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getUserById(id: string) {
+        try {
+            const user = await userRepository.getUserById(id);
+
+            return user;
         } catch (error) {
             throw error;
         }

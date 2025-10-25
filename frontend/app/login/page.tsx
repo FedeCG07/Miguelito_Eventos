@@ -14,7 +14,7 @@ import { Calendar, Mail, Lock, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
+  const [identifier, setIdentifier] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const { login, user } = useAuth()
@@ -30,7 +30,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!email || !password) {
+    if (!identifier || !password) {
       toast({
         title: "Campos incompletos",
         description: "Por favor completa todos los campos",
@@ -41,24 +41,22 @@ export default function LoginPage() {
 
     setIsLoading(true)
 
-    try {
-      const success = await login(email, password)
-      if (success) {
-        toast({
-          title: "¡Bienvenido!",
-          description: "Has iniciado sesión correctamente",
-        })
-        router.push("/")
-      }
-    } catch (error) {
+    const success = await login(identifier, password)
+    if (success) {
+      toast({
+        title: "¡Bienvenido!",
+        description: "Has iniciado sesión correctamente",
+      })
+      router.push("/")
+    } else {
       toast({
         title: "Error al iniciar sesión",
         description: "Por favor verifica tus credenciales",
         variant: "destructive",
       })
-    } finally {
-      setIsLoading(false)
     }
+
+    setIsLoading(false)
   }
 
   if (user) {
@@ -79,7 +77,6 @@ export default function LoginPage() {
           <p className="text-muted-foreground">Inicia sesión para continuar</p>
         </div>
 
-        {/* Login Form */}
         <Card>
           <CardHeader>
             <CardTitle>Iniciar Sesión</CardTitle>
@@ -88,15 +85,14 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Correo Electrónico</Label>
+                <Label>Correo electrónico o nombre de usuario</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="email"
-                    type="email"
+                    id="identifier"
                     placeholder="tu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
                     className="pl-10"
                     disabled={isLoading}
                   />
@@ -140,15 +136,6 @@ export default function LoginPage() {
               </div>
             </CardFooter>
           </form>
-        </Card>
-
-        {/* Demo Info */}
-        <Card className="bg-muted/50">
-          <CardContent className="pt-6">
-            <p className="text-sm text-center text-muted-foreground">
-              <strong>Modo Demo:</strong> Puedes usar cualquier email y contraseña para iniciar sesión
-            </p>
-          </CardContent>
         </Card>
       </div>
     </div>

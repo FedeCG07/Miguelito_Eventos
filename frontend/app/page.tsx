@@ -9,9 +9,11 @@ import { Plus } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 
 export default function HomePage() {
-  const [selectedCategory, setSelectedCategory] = useState("Todos")
+  const [selectedCategoryId, setSelectedCategoryId] = useState("all")
   const [events, setEvents] = useState<any[]>([])
-  const [categories, setCategories] = useState<string[]>(["Todos"])
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([
+    { id: "all", name: "Todos" }
+  ])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuth()
@@ -24,18 +26,18 @@ export default function HomePage() {
 
         const baseUrl = process.env.NEXT_PUBLIC_API_URL
 
-        // Fetch categories and events in parallel
         const [categoriesRes, eventsRes] = await Promise.all([
           axios.get(`${baseUrl}/category/`),
           axios.get(`${baseUrl}/event/`)
         ])
 
-        // Merge "Todos" as a default category
         setCategories([
-          "Todos",
-          ...categoriesRes.data.categories.map((c: any) => c.category)
+          { id: "all", name: "Todos" },
+          ...categoriesRes.data.categories.map((c: any) => ({
+            id: c.id,
+            name: c.category
+          }))
         ])
-        console.log("Categories response:", eventsRes.data)
         setEvents(eventsRes.data.events)
       } catch (err) {
         console.error(err)
@@ -49,10 +51,9 @@ export default function HomePage() {
   }, [])
 
   const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
-      return selectedCategory === "Todos" || event.category === selectedCategory
-    })
-  }, [selectedCategory])
+    if (selectedCategoryId === "all") return events;
+    return events.filter(event => event.categoryId === selectedCategoryId)
+  }, [selectedCategoryId, events])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -62,13 +63,13 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {categories.map((category) => (
                 <Button
-                  key={category}
-                  variant={selectedCategory === category ? "secondary" : "outline"}
-                  onClick={() => setSelectedCategory(category)}
+                  key={category.id}
+                  variant={selectedCategoryId === category.id ? "secondary" : "outline"}
+                  onClick={() => setSelectedCategoryId(category.id)}
                   className="rounded-full border-2 border-primary-foreground/20 hover:border-primary-foreground/40 transition-colors"
                   size="lg"
                 >
-                  {category}
+                  {category.name}
                 </Button>
               ))}
             </div>
@@ -83,7 +84,9 @@ export default function HomePage() {
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <h2 className="font-display font-semibold text-2xl">
-                  {selectedCategory === "Todos" ? "Todos los Eventos" : selectedCategory}
+                  {selectedCategoryId === "all"
+                    ? "Todos los Eventos"
+                    : categories.find((c) => c.id === selectedCategoryId)?.name || ""}
                 </h2>
                 <p className="text-muted-foreground">
                   {filteredEvents.length} {filteredEvents.length === 1 ? "evento" : "eventos"}

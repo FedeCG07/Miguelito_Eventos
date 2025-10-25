@@ -13,7 +13,7 @@ import { Wallet, Mail, UserIcon, Plus, CreditCard } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function ProfilePage() {
-  const { user, updateBalance, isLoading } = useAuth()
+  const { user, isLoading, updateBalance } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
   const [rechargeAmount, setRechargeAmount] = useState("")
@@ -50,17 +50,23 @@ export default function ProfilePage() {
     }
 
     setIsRecharging(true)
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    updateBalance(amount)
+    const success = await updateBalance(amount)
     setRechargeAmount("")
     setIsRecharging(false)
 
-    toast({
-      title: "¡Recarga exitosa!",
-      description: `Se han agregado $${amount.toLocaleString()} a tu balance.`,
-    })
+    if (success) {
+      toast({
+        title: "¡Recarga exitosa!",
+        description: `Se han agregado $${amount.toLocaleString()} a tu balance.`,
+      })
+      setRechargeAmount("")
+    } else {
+      toast({
+        title: "Error",
+        description: "No se pudo procesar la recarga",
+        variant: "destructive",
+      })
+    }
   }
 
   const quickRechargeAmounts = [500, 1000, 2000, 5000]
@@ -74,15 +80,14 @@ export default function ProfilePage() {
             <CardContent className="pt-6">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-                  <AvatarFallback className="text-2xl">{user.name.charAt(0)}</AvatarFallback>
+                  <AvatarImage src={user.avatar || ""} alt={user.username} />
+                  <AvatarFallback className="text-2xl">{user.username.charAt(0)}</AvatarFallback>
                 </Avatar>
 
                 <div className="flex-1 text-center sm:text-left space-y-2">
-                  <h1 className="font-display font-bold text-3xl">{user.name}</h1>
+                  <h1 className="font-display font-bold text-3xl">{user.firstName + ' ' + user.lastName}</h1>
                   <div className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                    <span>{user.email}</span>
+                    <span>{user.username}</span>
                   </div>
                 </div>
 
@@ -110,11 +115,19 @@ export default function ProfilePage() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Nombre</Label>
-                  <Input value={user.name} disabled />
+                  <Input value={user.firstName} disabled />
+                </div>
+                <div className="space-y-2">
+                  <Label>Apellido</Label>
+                  <Input value={user.lastName} disabled />
                 </div>
                 <div className="space-y-2">
                   <Label>Correo Electrónico</Label>
                   <Input value={user.email} disabled />
+                </div>
+                <div className="space-y-2">
+                  <Label>DNI</Label>
+                  <Input value={user.DNI} disabled />
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">Para actualizar tu información, contacta al soporte.</p>
@@ -188,8 +201,7 @@ export default function ProfilePage() {
                 <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                   <p className="text-sm font-medium">Información de pago</p>
                   <p className="text-xs text-muted-foreground">
-                    Esta es una demostración. En producción, aquí se integraría un procesador de pagos real como Stripe
-                    o PayPal.
+                    Aquí se integraría un procesador de pagos.
                   </p>
                 </div>
               </div>

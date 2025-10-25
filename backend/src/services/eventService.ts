@@ -179,12 +179,14 @@ export class EventService {
                     date: event.date,
                     shortDescription: event.shortDescription,
                     longDescription: event.longDescription,
+                    address: event.address,
                     price: event.price,
                     cancelled: event.cancelled,
-                    maximumCapaxity: event.maximumCapacity,
+                    maximumCapacity: event.maximumCapacity,
                     assistingUsers: event.assistingUsers,
+                    categoryId: category.id,
                     category: category.category,
-                    creator: creator.firstName + ' ' + creator.lastName
+                    creator: creator.username
                 }
             })
         )

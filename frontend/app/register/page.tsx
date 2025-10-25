@@ -10,11 +10,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, Mail, Lock, User, Loader2 } from "lucide-react"
+import { Calendar, Mail, Lock, User, Loader2, IdCard } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function RegisterPage() {
-  const [name, setName] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [username, setUsername] = useState("")
+  const [dni, setDni] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -32,7 +35,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !username || !dni || !email || !password || !confirmPassword) {
       toast({
         title: "Campos incompletos",
         description: "Por favor completa todos los campos",
@@ -62,7 +65,7 @@ export default function RegisterPage() {
     setIsLoading(true)
 
     try {
-      const success = await register(name, email, password)
+      const success = await register(firstName, lastName, username, dni, email, password)
       if (success) {
         toast({
           title: "¡Cuenta creada!",
@@ -108,15 +111,63 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nombre Completo</Label>
+                <Label htmlFor="firstName">Nombre</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="name"
+                    id="firstName"
                     type="text"
-                    placeholder="Juan Pérez"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Juan"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="pl-10"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Apellido</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder="Pérez"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="pl-10"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="username">Nombre de usuario</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="miguelito23"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="pl-10"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dni">DNI</Label>
+                <div className="relative">
+                  <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="dni"
+                    type="text"
+                    placeholder="12 345 678"
+                    value={dni}
+                    onChange={(e) => setDni(e.target.value)}
                     className="pl-10"
                     disabled={isLoading}
                   />

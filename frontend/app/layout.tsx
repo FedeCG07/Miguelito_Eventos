@@ -4,6 +4,7 @@ import { Inter, Poppins } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/lib/auth-context"
 import { Navbar } from "@/components/navbar"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const poppins = Poppins({
@@ -29,6 +30,7 @@ export default function RootLayout({
           <Navbar />
           <main className="min-h-screen">{children}</main>
         </AuthProvider>
+        <Toaster/>
       </body>
     </html>
   )
