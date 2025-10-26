@@ -82,9 +82,13 @@ export class EventService {
         }
     }
 
-    async getAllEvents() {
+    async getAllEvents(userId?: string) {
         try {
-            const events = await eventRepository.getAllEvents();
+            let events = await eventRepository.getAllEvents();
+
+            if (userId) {
+                events = events.filter(event => event.userCreatorId !== userId);
+            }
 
             const events_details = await this.mapEventDetails(events);
 
@@ -94,9 +98,13 @@ export class EventService {
         }
     }
 
-    async getFreeEvents() {
+    async getFreeEvents(userId?: string) {
         try {
-            const events = await eventRepository.getFreeEvents();
+            let events = await eventRepository.getFreeEvents();
+
+            if (userId) {
+                events = events.filter(event => event.userCreatorId !== userId);
+            }
             
             const events_details = await this.mapEventDetails(events);
 
@@ -106,9 +114,13 @@ export class EventService {
         }
     }
 
-    async getEventByCategory(category: number) {
+    async getEventByCategory(category: number, userId?: string) {
         try {
-            const events = await eventRepository.getEventsByCategory(category);
+            let events = await eventRepository.getEventsByCategory(category);
+
+            if (userId) {
+                events = events.filter(event => event.userCreatorId !== userId);
+            }
 
             const event_details = await this.mapEventDetails(events);
 
@@ -121,12 +133,22 @@ export class EventService {
     async getEventsJoinedByUser(userId: string) {
         try {
             const user_events = await userEventRepository.getUserEventByUserId(userId);
-            const events = await Promise.all(
+            
+            let events = await Promise.all(
                 user_events.map(async (user_event: any) => {
                     const event = await eventRepository.getEventById(user_event.eventId);
                     return event;
                 })
             )
+
+            events.sort((a, b) => {
+                if (a.cancelled && !b.cancelled) return 1
+                if (!a.cancelled && b.cancelled) return -1
+                    
+                return new Date(b.date).getTime() - new Date(a.date).getTime()
+            })
+
+            events = events.filter(event => event.userCreatorId !== userId);
 
             const event_details = await this.mapEventDetails(events);
 
@@ -163,6 +185,18 @@ export class EventService {
             }
 
             return cancelled_event;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getEventsByCreator(userId: string) {
+        try {
+            const events = await eventRepository.getEventsByCreator(userId);
+
+            const event_details = await this.mapEventDetails(events);
+
+            return event_details;
         } catch (error) {
             throw error;
         }

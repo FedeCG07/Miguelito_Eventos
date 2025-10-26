@@ -102,10 +102,8 @@ export class EventRepositroy {
             where: {
                 date: {
                     gt: new Date()
-                }
-            },
-            orderBy: {
-                cancelled: 'asc'
+                },
+                cancelled: false
             }
         });
     }
@@ -117,10 +115,8 @@ export class EventRepositroy {
                     price: 0,
                     date: {
                         gt: new Date()
-                    }
-                },
-                orderBy: {
-                    cancelled: 'asc'
+                    },
+                    cancelled: false
                 }
             })
 
@@ -139,11 +135,29 @@ export class EventRepositroy {
                     category,
                     date: {
                         gt: new Date()
-                    }
-                },
-                orderBy: {
-                    cancelled: 'asc'
+                    },
+                    cancelled: false
                 }
+            })
+
+            if (!events) throw new Error;
+
+            return events;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getEventsByCreator(userCreatorId: string) {
+        try {
+            const events = await db.event.findMany({
+                where: {
+                    userCreatorId
+                },
+                orderBy: [
+                    { cancelled: 'asc' },
+                    { date: 'desc' }
+                ]
             })
 
             if (!events) throw new Error;

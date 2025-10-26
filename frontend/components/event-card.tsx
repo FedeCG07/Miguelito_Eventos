@@ -9,9 +9,10 @@ import type { Event } from "@/lib/types"
 
 interface EventCardProps {
   event: Event
+  joined?: boolean
 }
 
-export function EventCard({ event }: EventCardProps) {
+export function EventCard({ event, joined }: EventCardProps) {
   const attendancePercentage = (event.assistingUsers / event.maximumCapacity) * 100
   const isAlmostFull = attendancePercentage >= 80
 
@@ -33,6 +34,11 @@ export function EventCard({ event }: EventCardProps) {
         <CardContent className="p-4 space-y-3">
           <h3 className="font-display font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
             {event.title}
+            {joined && (
+              <span className="ml-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-md">
+                Ya estás anotado
+              </span>
+            )}
           </h3>
 
           <p className="text-sm text-muted-foreground line-clamp-2">{event.shortDescription}</p>

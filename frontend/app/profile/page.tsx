@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Wallet, Mail, UserIcon, Plus, CreditCard } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import axios from "axios"
+import Link from "next/link"
 
 export default function ProfilePage() {
   const { user, isLoading, updateBalance } = useAuth()
@@ -18,12 +20,37 @@ export default function ProfilePage() {
   const { toast } = useToast()
   const [rechargeAmount, setRechargeAmount] = useState("")
   const [isRecharging, setIsRecharging] = useState(false)
+  const [myEvents, setMyEvents] = useState<any[]>([])
+  const [loadingEvents, setLoadingEvents] = useState(true)
+  const [activeTab, setActiveTab] = useState<"created" | "joined">("created")
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.push("/login")
     }
   }, [user, isLoading, router])
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoadingEvents(true)
+      try {
+        const url =
+          activeTab === "created"
+            ? `${process.env.NEXT_PUBLIC_API_URL}/event/created`
+            : `${process.env.NEXT_PUBLIC_API_URL}/event/joined`
+
+        const res = await axios.get(url, { withCredentials: true })
+        setMyEvents(res.data.events)
+      } catch (err) {
+        console.error("Error fetching events", err)
+        setMyEvents([])
+      } finally {
+        setLoadingEvents(false)
+      }
+    }
+
+    if (user) fetchEvents()
+  }, [user, activeTab])
 
   if (isLoading) {
     return (
@@ -207,6 +234,76 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* My Events */}
+          <Card>
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <CardTitle>Mis Eventos</CardTitle>
+                <CardDescription>
+                  {activeTab === "created"
+                    ? "Eventos que has creado"
+                    : "Eventos en los que estás anotado"}
+                </CardDescription>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant={activeTab === "created" ? "default" : "outline"}
+                  onClick={() => setActiveTab("created")}
+                >
+                  Creados
+                </Button>
+                <Button
+                  variant={activeTab === "joined" ? "default" : "outline"}
+                  onClick={() => setActiveTab("joined")}
+                >
+                  Anotados
+                </Button>
+              </div>
+            </CardHeader>
+
+            <CardContent>
+              {loadingEvents ? (
+                <p className="text-muted-foreground">Cargando...</p>
+              ) : myEvents.length === 0 ? (
+                <p className="text-muted-foreground">No hay eventos en esta categoría</p>
+              ) : (
+                <ul className="space-y-4">
+                  {myEvents.map((event) => {
+                    const isPast = new Date(event.date) < new Date()
+
+                    return (
+                      <Link key={event.id} href={`/event/${event.id}`} className="block">
+                        <li
+                          className={`relative p-4 border rounded-lg bg-muted/30 hover:shadow-md transition ${
+                            isPast ? "opacity-60 saturate-75" : "opacity-100"
+                          }`}
+                        >
+                          {event.cancelled && (
+                            <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-md shadow-md">
+                              Cancelado
+                            </div>
+                          )}
+
+                          <h3 className="font-semibold text-lg">{event.title}</h3>
+                          <p className="text-sm text-muted-foreground">{event.shortDescription}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(event.date).toLocaleDateString("es-ES", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </p>
+                        </li>
+                      </Link>
+                    )
+                  })}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import { getJoinedEvents } from "../controllers/getEventsJoinedByUser";
 import { getAssistingUsers } from "../controllers/getAssistingUsers";
 import { cancelReservations } from "../controllers/cancelReservations";
 import { cancelEvent } from "../controllers/cancelEvent";
+import { getCreatedEvents } from "../controllers/getCreatedEvents";
 
 export const eventRouter = Router();
 
@@ -19,4 +20,5 @@ eventRouter.get('/joined', getJoinedEvents);
 eventRouter.get('/assisting/:id', getAssistingUsers);
 eventRouter.post('/unreserve', cancelReservations);
 eventRouter.post('/cancel/:id', cancelEvent)
+eventRouter.get('/created', getCreatedEvents);
 eventRouter.get('/:category', getEventsByCategory);
