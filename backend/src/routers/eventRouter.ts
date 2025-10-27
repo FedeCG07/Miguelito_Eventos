@@ -9,6 +9,7 @@ import { getAssistingUsers } from "../controllers/getAssistingUsers";
 import { cancelReservations } from "../controllers/cancelReservations";
 import { cancelEvent } from "../controllers/cancelEvent";
 import { getCreatedEvents } from "../controllers/getCreatedEvents";
+import { getEventById } from "../controllers/getEventById";
 
 export const eventRouter = Router();
 
@@ -21,4 +22,5 @@ eventRouter.get('/assisting/:id', getAssistingUsers);
 eventRouter.post('/unreserve', cancelReservations);
 eventRouter.post('/cancel/:id', cancelEvent)
 eventRouter.get('/created', getCreatedEvents);
-eventRouter.get('/:category', getEventsByCategory);
+eventRouter.get('/:id', getEventById);
+//eventRouter.get('/:category', getEventsByCategory);

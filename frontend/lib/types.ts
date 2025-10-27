@@ -10,7 +10,6 @@ export interface Event {
   maximumCapacity: number
   assistingUsers: number
   categoryId: number
-  category: string
   creator: string
   image: string //sacar de carpeta o algo así / guardar link a la carpeta en la db??
 }

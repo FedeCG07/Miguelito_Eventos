@@ -3,6 +3,7 @@ import { UserEventRepository } from "../repositories/userEventRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { CategoryRepository } from "../repositories/categoryRepository";
 import { Event as PrismaEvent, UserEvent } from '@prisma/client';
+import { HTTPError } from "../error/HTTPError";
 
 
 const eventRepository = new EventRepositroy();
@@ -29,20 +30,20 @@ export class EventService {
         try {
             const user_event = await userEventRepository.getUserEventByUserIdAndEventId(eventId, userId);
 
-            if (user_event.length != 0) throw new Error('Already joined this event'); //already joined the event
+            if (user_event.length != 0) throw new HTTPError("Ya te has unido", 400) //already joined the event
             
             const event = await eventRepository.getEventById(eventId);
             const price = event.price;
 
             const maximumCapacity = event.maximumCapacity;
             const assistingUsers = event.assistingUsers;
-            if (assistingUsers + reservations > maximumCapacity) throw new Error;
+            if (assistingUsers + reservations > maximumCapacity) throw new HTTPError("Lugares insuficiente", 409);
 
             if (price != 0) {
                 const user = await userRepository.getUserById(userId);
 
                 const balance = user.balance;
-                if (!(balance >= price * reservations)) throw new Error;
+                if (!(balance >= price * reservations)) throw new HTTPError("Dinero insuficiente", 402);
 
                 await userRepository.decreaseBalance(userId, price * reservations);
             }
@@ -202,24 +203,48 @@ export class EventService {
         }
     }
 
+    async getEventById(eventId: string) {
+        try {
+            const event = await eventRepository.getEventById(eventId);
+            const category = await categoryRepository.getCategory(event.category)
+            const creator = await userRepository.getUserById(event.userCreatorId)
+
+            const full_event = {
+                ...event,
+                id: event.id,
+                title: event.title,
+                date: event.date,
+                longDescription: event.longDescription,
+                address: event.address,
+                price: event.price,
+                cancelled: event.cancelled,
+                maximumCapacity: event.maximumCapacity,
+                assistingUsers: event.assistingUsers,
+                category: category.category,
+                creator: creator.username
+            }
+
+            return full_event;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async mapEventDetails(events: PrismaEvent[]) {
         const eventsDetails = await Promise.all(
             events.map(async (event: any) => {
-                const category = await categoryRepository.getCategory(event.category);
                 const creator = await userRepository.getUserById(event.userCreatorId);
                 return {
                     id: event.id,
                     title: event.title,
                     date: event.date,
                     shortDescription: event.shortDescription,
-                    longDescription: event.longDescription,
                     address: event.address,
                     price: event.price,
                     cancelled: event.cancelled,
                     maximumCapacity: event.maximumCapacity,
                     assistingUsers: event.assistingUsers,
-                    categoryId: category.id,
-                    category: category.category,
+                    categoryId: event.category,
                     creator: creator.username
                 }
             })

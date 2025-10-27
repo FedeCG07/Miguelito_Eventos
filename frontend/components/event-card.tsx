@@ -10,9 +10,10 @@ import type { Event } from "@/lib/types"
 interface EventCardProps {
   event: Event
   joined?: boolean
+  category: string
 }
 
-export function EventCard({ event, joined }: EventCardProps) {
+export function EventCard({ event, joined, category }: EventCardProps) {
   const attendancePercentage = (event.assistingUsers / event.maximumCapacity) * 100
   const isAlmostFull = attendancePercentage >= 80
 
@@ -27,7 +28,7 @@ export function EventCard({ event, joined }: EventCardProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute top-3 right-3">
-            <Badge className="bg-background/90 text-foreground backdrop-blur-sm">{event.category}</Badge>
+            <Badge className="bg-background/90 text-foreground backdrop-blur-sm">{category}</Badge>
           </div>
         </div>
 

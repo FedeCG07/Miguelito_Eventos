@@ -44,8 +44,6 @@ export class UserEventRepository {
         and reservationsMade - reservationsCancelled != 0;
         `
 
-        if (user_events.length === 0) throw new Error;
-
         return user_events;
     }
 
@@ -55,8 +53,6 @@ export class UserEventRepository {
         where userevent.eventid = ${eventId}
         and reservationsMade - reservationsCancelled != 0;
         `
-
-        if (user_events.length === 0) throw new Error;
 
         return user_events;
     }

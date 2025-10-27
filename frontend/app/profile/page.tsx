@@ -274,7 +274,7 @@ export default function ProfilePage() {
                     const isPast = new Date(event.date) < new Date()
 
                     return (
-                      <Link key={event.id} href={`/event/${event.id}`} className="block">
+                      <Link key={event.id} href={`/events/${event.id}`} className="block">
                         <li
                           className={`relative p-4 border rounded-lg bg-muted/30 hover:shadow-md transition ${
                             isPast ? "opacity-60 saturate-75" : "opacity-100"

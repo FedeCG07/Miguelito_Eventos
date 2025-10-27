@@ -72,7 +72,7 @@ export default function HomePage() {
       filtered = filtered.filter(event => event.categoryId === selectedCategoryId)
     }
     if (showFreeOnly) {
-      filtered = filtered.filter(event => event.price === 0) // 👈 filtro de gratuitos
+      filtered = filtered.filter(event => event.price === 0) 
     }
     return filtered
   }, [selectedCategoryId, events, showFreeOnly])
@@ -161,9 +161,16 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredEvents.map((event) => (
-                <EventCard key={event.id} event={event} joined={joinedEventIds.includes(event.id)} />
-              ))}
+              {filteredEvents.map((event) => {
+                let event_category = categories.filter(category => category.id === event.categoryId)
+                return (<EventCard 
+                  key={event.id} 
+                  event={event} 
+                  joined={joinedEventIds.includes(event.id)} 
+                  category={event_category[0] ? event_category[0].name : "Sin categoría"}
+                />
+              )}
+              )}
             </div>
           </>
         ) : (
