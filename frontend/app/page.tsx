@@ -136,43 +136,42 @@ export default function HomePage() {
 
       {/* Events Grid */}
       <section className="container mx-auto px-4 py-12">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="font-display font-semibold text-2xl">
+              {selectedCategoryId === "all"
+                ? "Todos los Eventos"
+                : categories.find((c) => c.id === selectedCategoryId)?.name || ""}
+            </h2>
+            <p className="text-muted-foreground">
+              {filteredEvents.length} {filteredEvents.length === 1 ? "evento" : "eventos"}
+            </p>
+          </div>
+
+          {user && (
+            <Link href="/create-event">
+              <Button size="default">
+                <Plus className="h-4 w-4 mr-2" />
+                Crear Evento
+              </Button>
+            </Link>
+          )}
+        </div>
+
         {filteredEvents.length > 0 ? (
-          <>
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="font-display font-semibold text-2xl">
-                  {selectedCategoryId === "all"
-                    ? "Todos los Eventos"
-                    : categories.find((c) => c.id === selectedCategoryId)?.name || ""}
-                </h2>
-                <p className="text-muted-foreground">
-                  {filteredEvents.length} {filteredEvents.length === 1 ? "evento" : "eventos"}
-                </p>
-              </div>
-
-              {user && (
-                <Link href="/create-event">
-                  <Button size="default">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Crear Evento
-                  </Button>
-                </Link>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredEvents.map((event) => {
-                let event_category = categories.filter(category => category.id === event.categoryId)
-                return (<EventCard 
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredEvents.map((event) => {
+              let event_category = categories.filter(category => category.id === event.categoryId)
+              return (
+                <EventCard 
                   key={event.id} 
                   event={event} 
                   joined={joinedEventIds.includes(event.id)} 
                   category={event_category[0] ? event_category[0].name : "Sin categoría"}
                 />
-              )}
-              )}
-            </div>
-          </>
+              )
+            })}
+          </div>
         ) : (
           <div className="text-center py-16">
             <p className="text-xl text-muted-foreground">No hay eventos en esta categoría</p>

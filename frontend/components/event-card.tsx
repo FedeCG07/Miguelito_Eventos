@@ -22,7 +22,7 @@ export function EventCard({ event, joined, category }: EventCardProps) {
       <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full group">
         <div className="relative h-48 overflow-hidden">
           <Image
-            src={event.image || "/placeholder.svg"}
+            src={event.imageLink || "/placeholder.svg"}
             alt={event.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"

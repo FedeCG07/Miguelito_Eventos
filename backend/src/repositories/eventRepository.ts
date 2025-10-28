@@ -2,7 +2,7 @@ import { Event } from "@prisma/client";
 import { db } from "../db/db";
 
 export class EventRepositroy {
-    async createEvent(title: string, date: Date, shortDescription: string, longDescription: string, address: string, price: number, maximumCapacity: number, category: number, userCreatorId: string) {
+    async createEvent(title: string, date: Date, shortDescription: string, longDescription: string, address: string, price: number, maximumCapacity: number, category: number, userCreatorId: string, imageLink: string) {
         const new_event = await db.event.create ({
             data: {
                 title,
@@ -13,7 +13,8 @@ export class EventRepositroy {
                 price,
                 maximumCapacity,
                 category,
-                userCreatorId
+                userCreatorId,
+                imageLink
             }
         })
         

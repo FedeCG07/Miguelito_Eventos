@@ -22,6 +22,7 @@ export default function CreateEventPage() {
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [categories, setCategories] = useState<{ id: string; category: string }[]>([])
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -84,6 +85,20 @@ export default function CreateEventPage() {
       return
     }
 
+    let imageUrl: string | undefined;
+    if (imageFile) {
+      const uploadData = new FormData();
+      uploadData.append("image", imageFile, imageFile.name);
+
+      const uploadRes = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/upload`,
+        uploadData,
+        { withCredentials: true }
+      );
+
+      imageUrl = uploadRes.data.url;
+    }
+
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URL
 
@@ -97,7 +112,8 @@ export default function CreateEventPage() {
         address: formData.address,
         price: Number(formData.price),        
         maximumCapacity: Number(formData.maxAttendees),
-        category: formData.category
+        category: formData.category,
+        imageLink: imageUrl ?? ""
       }
 
       await axios.post(`${baseUrl}/event/create`, payload, { withCredentials: true })
@@ -261,20 +277,19 @@ export default function CreateEventPage() {
 
             {/* Image URL */}
             <div className="space-y-2">
-              <Label htmlFor="image">URL de la Imagen</Label>
+              <Label htmlFor="image">Imagen</Label>
               <div className="relative">
                 <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="image"
-                  placeholder="https://ejemplo.com/imagen.jpg"
+                  placeholder="Arrastra y suelta la imagen"
                   className="pl-10"
                   value={formData.image}
-                  onChange={(e) => handleChange("image", e.target.value)}
+                  onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+                  type="file"
+                  accept="image/*"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
-                Opcional: Si no proporcionas una imagen, se usará una por defecto
-              </p>
             </div>
 
             {/* Max Attendees and Price */}

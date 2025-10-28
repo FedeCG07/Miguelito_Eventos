@@ -8,7 +8,7 @@ const authService = new AuthService();
 export async function createEvent(req: Request, res: Response) {
     try {
         const token = req.cookies?.token;
-        const { title, date, shortDescription, longDescription, address, price, maximumCapacity, category } = req.body;
+        const { title, date, shortDescription, longDescription, address, price, maximumCapacity, category, imageLink } = req.body;
         const formated_date = new Date(date); //2025-10-21T15:30:00Z
         const int_price = +price;
         const int_maximumCapacity = +maximumCapacity;
@@ -19,7 +19,7 @@ export async function createEvent(req: Request, res: Response) {
         const decoded_token = authService.decodeToken(token);
         const user_id = decoded_token.id;
 
-        const event = await eventService.createEvent(title, formated_date, shortDescription, longDescription, address, int_price, int_maximumCapacity, int_category, user_id)
+        const event = await eventService.createEvent(title, formated_date, shortDescription, longDescription, address, int_price, int_maximumCapacity, int_category, user_id, imageLink)
 
         res.status(201).json({ event });
     } catch (error) {

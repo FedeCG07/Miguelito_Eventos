@@ -33,6 +33,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
         const baseUrl = process.env.NEXT_PUBLIC_API_URL
         const res = await axios.get(`${baseUrl}/event/${id}`, { withCredentials: true })
         setEvent(res.data.event)
+        console.log(res.data.event)
       } catch (err) {
         console.error("Error fetching event:", err)
         setEvent(null)
@@ -170,7 +171,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* Hero Image */}
       <div className="relative h-[400px] w-full">
-        <Image src={event.image || "/placeholder.svg"} alt={event.title} fill className="object-cover" priority />
+        <Image src={event.imageLink || "/placeholder.svg"} alt={event.title} fill className="object-cover" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 container mx-auto px-4 pb-8">
           {event.cancelled && <Badge className="bg-red-600 text-white">Cancelado</Badge>}

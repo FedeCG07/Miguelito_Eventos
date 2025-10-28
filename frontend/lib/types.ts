@@ -11,7 +11,7 @@ export interface Event {
   assistingUsers: number
   categoryId: number
   creator: string
-  image: string //sacar de carpeta o algo así / guardar link a la carpeta en la db??
+  imageLink: string //sacar de carpeta o algo así / guardar link a la carpeta en la db??
 }
 /* 
 "id": "886d0346-bccc-49b9-a8ee-dd7897cf6296",

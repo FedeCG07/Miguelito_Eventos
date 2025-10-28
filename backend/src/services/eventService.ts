@@ -12,9 +12,9 @@ const userRepository = new UserRepository();
 const categoryRepository = new CategoryRepository();
 
 export class EventService {
-    async createEvent(title: string, date: Date, shortDescription: string, longDescription: string, address: string, price: number, maximumCapacity: number, category: number, userCreatorId: string) {
+    async createEvent(title: string, date: Date, shortDescription: string, longDescription: string, address: string, price: number, maximumCapacity: number, category: number, userCreatorId: string, imageLink: string) {
         try {
-            const new_event = await eventRepository.createEvent(title, date, shortDescription, longDescription, address, price, maximumCapacity, category, userCreatorId);
+            const new_event = await eventRepository.createEvent(title, date, shortDescription, longDescription, address, price, maximumCapacity, category, userCreatorId, imageLink);
 
             const event_id = new_event.id;
             await userEventRepository.createUserEvent(event_id, userCreatorId, 1);
@@ -221,7 +221,8 @@ export class EventService {
                 maximumCapacity: event.maximumCapacity,
                 assistingUsers: event.assistingUsers,
                 category: category.category,
-                creator: creator.username
+                creator: creator.username,
+                imageLink: event.imageLink
             }
 
             return full_event;
@@ -245,7 +246,8 @@ export class EventService {
                     maximumCapacity: event.maximumCapacity,
                     assistingUsers: event.assistingUsers,
                     categoryId: event.category,
-                    creator: creator.username
+                    creator: creator.username,
+                    imageLink: event.imageLink
                 }
             })
         )
