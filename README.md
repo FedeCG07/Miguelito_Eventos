@@ -36,7 +36,7 @@ npm run test
 ``` 
 
 # Observaciones
-## Tests
+## Configuración de tests
 Los tests quedaron configurados para utilizar la db principal del proyecto, por lo que al ser utilizados tendrán efecto directo en esto, y deben ser correctamente configurados para que pasen. Para acceder a los datos dentro de la db (e.g. ids) se puede utilizar la extención de vscode "SQLite" (luego de instalarla con ctrl + shift + p se selcciona la opción "SQLite: Open Database", se selecciona la db, y aparecerá en el explorer de archivos (abajo a la izquierda). ahí se elige la tabla que se quiere revisar, click derecho y "Show table") o se puede user un explorador de sqlite databases en la web.
 A continuación se deja las configuraciones exactas para cada test:
 ### Crear evento
