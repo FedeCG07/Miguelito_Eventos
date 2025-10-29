@@ -13,4 +13,4 @@ userRouter.post('/login', login);
 userRouter.get('/logout', logout);
 userRouter.post('/add/:amount', addFunds)
 userRouter.get('/balance', checkBalance)
-//userRouter.get('/me', me)
+userRouter.get('/me', me)

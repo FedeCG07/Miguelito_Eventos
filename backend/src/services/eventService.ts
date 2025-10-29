@@ -151,9 +151,20 @@ export class EventService {
 
             events = events.filter(event => event.userCreatorId !== userId);
 
-            const event_details = await this.mapEventDetails(events);
+            let event_details = await this.mapEventDetails(events);
 
-            return event_details;
+            const updatedEvents = event_details.map(event => {
+                const user_event = user_events.find(ue => ue.eventId === event.id)
+                if (user_event) {
+                    return {
+                    ...event,
+                    reservations: user_event.reservationsMade - user_event.reservationsCancelled
+                    }
+                }
+                return event
+            })
+
+            return updatedEvents;
         } catch (error) {
             throw error;
         }

@@ -131,7 +131,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
     setIsRegistering(true)
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URL
-      await axios.post(`${baseUrl}/event/unreserve`, { amount }, { withCredentials: true })
+      await axios.post(`${baseUrl}/event/unreserve`, { eventId: id, amount }, { withCredentials: true })
       toast({
         title: "Reserva cancelada",
         description: `Has cancelado ${amount} lugar(es) para ${event.title}.`,

@@ -286,7 +286,15 @@ export default function ProfilePage() {
                             </div>
                           )}
 
-                          <h3 className="font-semibold text-lg">{event.title}</h3>
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-lg">{event.title}</h3>
+                            {activeTab === "joined" && (
+                              <span className="text-sm text-primary font-medium">
+                                {event.reservations} {event.reservations === 1 ? "entrada" : "entradas"}
+                              </span>
+                            )}
+                          </div>
+
                           <p className="text-sm text-muted-foreground">{event.shortDescription}</p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(event.date).toLocaleDateString("es-ES", {
