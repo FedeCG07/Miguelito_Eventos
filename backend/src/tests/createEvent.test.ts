@@ -5,7 +5,7 @@ import { AuthService } from "../services/authService";
 const authService = new AuthService();
 
 const validToken = authService.createToken({
-    id: "dd6143ac-e467-44b2-b7a0-6504b93e94ed"
+    id: "dd6143ac-e467-44b2-b7a0-6504b93e94ed" // <-- Id de usuario existente
 });
 
 describe("POST /event/create (createEvent)", () => {

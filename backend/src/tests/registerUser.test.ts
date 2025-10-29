@@ -8,9 +8,9 @@ describe("POST /user/register (register controller)", () => {
       .send({
         firstName: "Juan",
         lastName: "Pérez",
-        username: "juanperez",
+        username: "juanperez", // <-- Nombre de usuario no utilizado 
         DNI: "12345678",
-        email: "juan@example.com",
+        email: "juan@example.com", // <-- Email no utilizado
         password: "password123"
       });
 
@@ -27,7 +27,7 @@ describe("POST /user/register (register controller)", () => {
       .send({
         firstName: "Juan",
         lastName: "Pérez",
-        username: "juanperez",
+        username: "juanperez", // <-- Nombre de usuario no utilizado 
         DNI: "12345678",
         email: "" // email vacío
         // password faltante

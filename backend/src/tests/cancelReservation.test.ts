@@ -5,7 +5,7 @@ import { AuthService } from "../services/authService";
 const authService = new AuthService();
 
 const validToken = authService.createToken({
-    id: "e3941e30-4d17-46d1-841d-fbafd35623d3" // id de usuario
+    id: "e3941e30-4d17-46d1-841d-fbafd35623d3" // <-- id de usuario existente 
 });
 
 describe("POST /event/cancel (cancelReservations controller)", () => {
@@ -15,7 +15,7 @@ describe("POST /event/cancel (cancelReservations controller)", () => {
       .post("/event/unreserve")
       .set("Cookie", [`token=${validToken}`])
       .send({
-        eventId: "1cc549b1-15b7-460d-a02c-154dc024155c",
+        eventId: "1cc549b1-15b7-460d-a02c-154dc024155c", // <-- id de evento al que el usuario se haya unido
         amount: 1,
       });
 
